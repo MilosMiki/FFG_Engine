@@ -60,7 +60,7 @@ namespace FFG_Engine
                 //Team[] teams = new Team[12];
                 for (int j = 0; j < 6; j++)
                 {
-                    teams.Add(new Team(r.Next(781, 786), r.Next(782, 787), j == 5 ? 10 : j));
+                    teams.Add(new Team(r.Next(781, 786), r.Next(781, 786), j == 5 ? 10 : j));
                 }
                 for (int j = 5; j < 10; j++)
                 {
