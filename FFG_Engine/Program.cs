@@ -9,12 +9,14 @@ namespace FFG_Engine
         private int id;
         private double value; //quali with a 0,6 multiplier, and race with a 1,0
         private int tier;
-        public Team(int q, int r, int i, int tier)
+        private int cof;
+        public Team(int q, int r, int c, int i, int tier)
         {
             this.quali = q;
             this.race = r;
             this.id = i;
-            this.value = q * 0.6 + r;
+            this.cof = c;
+            this.value = q * 0.6 + r + ((c/100)*1.33)*-0.3;
             this.tier = tier;
         }
 
@@ -23,6 +25,7 @@ namespace FFG_Engine
         public int Quali { get => quali; set => quali = value; }
         public int Race { get => race; set => race = value; }
         public int Tier { get => tier; set => tier = value; }
+        public int Cof { get => cof; set => cof = value; }
 
         public int CompareTo(Team? t)
         {
@@ -77,19 +80,19 @@ namespace FFG_Engine
                 //Team[] teams = new Team[12];
                 for (int j = 0; j < 5; j++)
                 {
-                    teams.Add(new Team(r.Next(781, 786), r.Next(781, 786), j == 4 ? 10 : j, 1));
+                    teams.Add(new Team(r.Next(781, 786), r.Next(781, 786), r.Next(4000, 4800), j == 4 ? 10 : j, 1));
                     //remove -1 from race HP to account for $200 price difference between T1 and T2/T3
                     //currently NOT removed
                 }
                 for (int j = 4; j < 9; j++)
                 {
-                    teams.Add(new Team(r.Next(775, 790), r.Next(775, 790), j == 8 ? 11 : j, 2));
+                    teams.Add(new Team(r.Next(775, 790), r.Next(775, 790),r.Next(3800, 5500), j == 8 ? 11 : j, 2));
                 }
                 for (int j = 8; j < 11; j++)
                 {
-                    teams.Add(new Team(r.Next(770, 790), r.Next(770, 790), j == 10 ? 12 : j, 3));
-                    //add +1 to quali HP to account for price difference between T1/T3
-                    //will however not be accurate for T2/T3
+                    teams.Add(new Team(r.Next(770, 790), r.Next(770, 790), r.Next(4600, 6000), j == 10 ? 12 : j, 3));
+                    //add +1 to quali HP to account for price difference between T1&T2/T3
+                    //will not be 100% accurate, but as close as you can get
                     //currently NOT added
                 }
                 teams.Sort();
@@ -108,11 +111,11 @@ namespace FFG_Engine
                             case 3: numBestT3Overall++; break;
                         }
                         bestValue = teams[j].Value;
-                        Console.WriteLine("Best: {0},{1},{2}", teams[j].Quali, teams[j].Race, teams[j].Value);
+                        Console.WriteLine("Best: {0},{1},{2},{3}", teams[j].Quali, teams[j].Race, teams[j].Cof, (int)teams[j].Value);
                     }
                     if (teams[j].Id == 10) //id = player tier 1
                     {
-                        Console.WriteLine("T1: {0},{1},{2}",teams[j].Quali, teams[j].Race, teams[j].Value);
+                        Console.WriteLine("T1: {0},{1},{2},{3}", teams[j].Quali, teams[j].Race, teams[j].Cof, (int)teams[j].Value);
                         double gap = bestValue - teams[j].Value;
                         if (gap < 5)
                             num5hpT1++;
@@ -133,7 +136,7 @@ namespace FFG_Engine
                     }
                     if (teams[j].Id == 11) //id = player tier 2
                     {
-                        Console.WriteLine("T2: {0},{1},{2}", teams[j].Quali, teams[j].Race, teams[j].Value);
+                        Console.WriteLine("T2: {0},{1},{2},{3}", teams[j].Quali, teams[j].Race, teams[j].Cof, (int)teams[j].Value);
                         double gap = bestValue - teams[j].Value;
                         if (gap < 5)
                             num5hpT2++;
@@ -154,7 +157,7 @@ namespace FFG_Engine
                     }
                     if (teams[j].Id == 12) //id = player tier 3
                     {
-                        Console.WriteLine("T3: {0},{1},{2}", teams[j].Quali, teams[j].Race, teams[j].Value);
+                        Console.WriteLine("T3: {0},{1},{2},{3}", teams[j].Quali, teams[j].Race, teams[j].Cof, (int)teams[j].Value);
                         double gap = bestValue - teams[j].Value;
                         if (gap < 5)
                             num5hpT3++;
@@ -180,11 +183,11 @@ namespace FFG_Engine
             Console.WriteLine("Times T1 best overall: {0} ({1}%)", numBestT1Overall, numBestT1Overall * 100 / numIterations);
             Console.WriteLine("Times T2 best overall: {0} ({1}%)", numBestT2Overall, numBestT2Overall * 100 / numIterations);
             Console.WriteLine("Times T3 best overall: {0} ({1}%)", numBestT3Overall, numBestT3Overall * 100 / numIterations);
+            Console.WriteLine("The engines are split 4/4/2 for tiers 1,2,3\nrespectively, including the player's best pick");
             Console.WriteLine();
             Console.WriteLine("Times player T1 best on the grid: {0} ({1}%)", numBestT1, numBestT1 * 100 / numIterations);
             Console.WriteLine("Times player T2 best on the grid: {0} ({1}%)", numBestT2, numBestT2 * 100 / numIterations);
             Console.WriteLine("Times player T3 best on the grid: {0} ({1}%)", numBestT3, numBestT3 * 100 / numIterations);
-            Console.WriteLine("The engines are split 4/4/2 for tiers 1,2,3\nrespectively, including the player's best pick");
             Console.WriteLine();
             Console.WriteLine("Times T1 within 3hp: {0} ({1}%)", num3hpT1, num3hpT1 * 100 / numIterations);
             Console.WriteLine("Times T2 within 3hp: {0} ({1}%)", num3hpT2, num3hpT2 * 100 / numIterations);
